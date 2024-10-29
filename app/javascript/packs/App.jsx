@@ -5,22 +5,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import SignOutButton from '../components/SignOutButton'
 
-const Hello = props => (
-  <div>Hello {props.name}!</div>
-)
+const App = () => (
+  <div>
+    <h1>Hello React</h1>
+    <SignOutButton />
+  </div>
+);
 
-Hello.defaultProps = {
-  name: 'David'
-}
-
-Hello.propTypes = {
-  name: PropTypes.string
-}
-
+// Render the App component once the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <Hello name="React" />,
+    <App />,
     document.body.appendChild(document.createElement('div')),
-  )
-})
+  );
+});
