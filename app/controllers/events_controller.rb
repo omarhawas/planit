@@ -1,0 +1,47 @@
+class EventsController < ApplicationController
+    before_action :set_event, only: [:show, :update, :destroy]
+
+    def create
+        @event = current_user.events.new(event_params)
+
+        if @event.save
+            render json: @event, status: :created
+        else
+            render json: {errors: @event.errors.full_messages}, status: :unprocessable_entity
+        end
+    end
+
+    def index
+        @events = current_user.events
+        render json: {events: @events}
+    end
+
+    def show
+        render json: {event: @event}
+    end
+
+
+    def update
+        if @event.update(event_params)
+            render json: {event: @event}
+        else
+            render json: {errors: @event.errors.full_messages}, status: :unprocessable_entity
+        end
+    end
+
+    def destroy
+        @event.destroy
+        render json: { message: 'Event deleted successfully' }, status: :ok
+    end
+
+    private
+
+    def set_event
+        @event = Event.find_by(id: params[:id])
+        render json: { errors: 'Event not found' }, status: :not_found unless @event
+    end
+
+    def event_params
+        params.require(:event).permit(:title, :description, :date, :time, :location)
+    end
+end
