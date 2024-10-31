@@ -2,18 +2,19 @@ class EventsController < ApplicationController
     before_action :set_event, only: [:show, :update, :destroy]
 
     def create
-        @event = current_user.events.new(event_params)
+        event = Event.new(event_params)
+        event.user = current_user
 
-        if @event.save
-            render json: @event, status: :created
+        if event.save
+            render json: event, status: :created
         else
-            render json: {errors: @event.errors.full_messages}, status: :unprocessable_entity
+            render json: { errors: event.errors.full_messages }, status: :unprocessable_entity
         end
     end
 
     def index
-        @events = current_user.events
-        render json: {events: @events}
+        events = current_user.events
+        render json: {events: events}
     end
 
     def show
