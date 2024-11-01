@@ -13,8 +13,9 @@ class EventsController < ApplicationController
     end
 
     def index
-        events = current_user.events
-        render json: {events: events}
+        Rails.logger.debug "Current User: #{current_user.inspect}"  # Debug log
+        @events = current_user.events
+        render json: {events: @events}
     end
 
     def show

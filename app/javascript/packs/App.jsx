@@ -6,11 +6,13 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import SignOutButton from '../components/SignOutButton'
+import Events from './Events'
 
 const App = () => (
   <div>
     <h1>Hello React</h1>
     <SignOutButton />
+    <Events />
   </div>
 );
 
