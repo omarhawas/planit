@@ -4,15 +4,13 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
-import SignOutButton from '../components/SignOutButton'
-import Events from './Events'
+// import SignOutButton from '../components/SignOutButton'
+// import Events from './Events'
 
 const App = () => (
   <div>
-    <h1>Hello React</h1>
-    <SignOutButton />
-    <Events />
+    <h1>Hello from React!</h1>
+    <h2>Testing </h2>
   </div>
 );
 
@@ -23,3 +21,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(document.createElement('div')),
   );
 });
+
+export default App
