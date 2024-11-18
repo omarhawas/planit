@@ -1,52 +1,58 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
-const EventForm = ({ event = {}, onSuccess }) => {
-  const [title, setTitle] = useState(event.title || '');
-  const [description, setDescription] = useState(event.description || '');
-  const [date, setDate] = useState(event.date || '');
-  const [time, setTime] = useState(event.time || '');
-  const [location, setLocation] = useState(event.location || '');
+const EventForm = ({ event, onSubmit }) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const url = event.id ? `/events/${event.id}` : '/events';
-      const method = event.id ? 'put' : 'post';
-
-      const response = await axios({
-        method: method,
-        url: url,
-        data: {
-          event: { title, description, date, time, location },
-          user_id: 1,
-        },
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        title: event.title,
+        description: event.description,
+        date: event.date,
+        time: event.time,
+        location: event.location,
       });
-
-      onSuccess(response.data.event || response.data);
-      resetForm();
-    } catch (error) {
-      console.error('There was an error!', error.response.data);
     }
-  };
+  }, [event]);
 
-  const resetForm = () => {
-    setTitle('');
-    setDescription('');
-    setDate('');
-    setTime('');
-    setLocation('');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required />
-      <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-      <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
-      <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" required />
-      <button type="submit">{event.id ? 'Update' : 'Create'} Event</button>
+      <input
+        type="text"
+        value={formData.title}
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      />
+      <textarea
+        value={formData.description}
+        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+      />
+      <input
+        type="date"
+        value={formData.date}
+        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+      />
+      <input
+        type="time"
+        value={formData.time}
+        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+      />
+      <input
+        type="text"
+        value={formData.location}
+        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+      />
+      <button type="submit">Submit</button>
     </form>
   );
 };

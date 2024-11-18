@@ -1,9 +1,9 @@
 module.exports = function(api) {
-  var validEnv = ['development', 'test', 'production']
-  var currentEnv = api.env()
-  var isDevelopmentEnv = api.env('development')
-  var isProductionEnv = api.env('production')
-  var isTestEnv = api.env('test')
+  var validEnv = ['development', 'test', 'production'];
+  var currentEnv = api.env();
+  var isDevelopmentEnv = api.env('development');
+  var isProductionEnv = api.env('production');
+  var isTestEnv = api.env('test');
 
   if (!validEnv.includes(currentEnv)) {
     throw new Error(
@@ -12,7 +12,7 @@ module.exports = function(api) {
         '"test", and "production". Instead, received: ' +
         JSON.stringify(currentEnv) +
         '.'
-    )
+    );
   }
 
   return {
@@ -21,29 +21,29 @@ module.exports = function(api) {
         '@babel/preset-env',
         {
           targets: {
-            node: 'current'
+            node: 'current',
           },
-          modules: 'commonjs'
+          modules: 'commonjs',
         },
-        '@babel/preset-react'
+        '@babel/preset-react',
       ],
       (isProductionEnv || isDevelopmentEnv) && [
         '@babel/preset-env',
         {
           forceAllTransforms: true,
-          useBuiltIns: 'entry',
-          corejs: 3,
-          modules: false,
-          exclude: ['transform-typeof-symbol']
-        }
+          useBuiltIns: 'entry', // Ensures polyfills are added correctly
+          corejs: 3, // Uses core-js version 3
+          modules: false, // Keeps ESModules as they are
+          exclude: ['transform-typeof-symbol'],
+        },
       ],
       [
         '@babel/preset-react',
         {
           development: isDevelopmentEnv || isTestEnv,
-          useBuiltIns: true
-        }
-      ]
+          useBuiltIns: true, // Ensures built-ins are included for React
+        },
+      ],
     ].filter(Boolean),
     plugins: [
       'babel-plugin-macros',
@@ -53,47 +53,44 @@ module.exports = function(api) {
       [
         '@babel/plugin-proposal-class-properties',
         {
-          loose: true
-        }
+          loose: true,
+        },
       ],
       [
         '@babel/plugin-proposal-object-rest-spread',
         {
-          useBuiltIns: true
-        }
+          useBuiltIns: true,
+        },
       ],
       [
         '@babel/plugin-proposal-private-methods',
         {
-          loose: true
-        }
+          loose: true,
+        },
       ],
       [
         '@babel/plugin-transform-private-property-in-object',
         {
-          loose: true
-        }
+          loose: true,
+        },
       ],
       [
         '@babel/plugin-transform-runtime',
         {
           helpers: false,
-          regenerator: true,
-          corejs: false
-        }
-      ],
-      [
-        '@babel/plugin-transform-regenerator',
-        {
-          async: false
-        }
+          regenerator: true, // Includes support for generator functions
+          corejs: false,
+        },
       ],
       isProductionEnv && [
         'babel-plugin-transform-react-remove-prop-types',
         {
-          removeImport: true
-        }
-      ]
-    ].filter(Boolean)
-  }
-}
+          removeImport: true,
+        },
+      ],
+      // Adding async generator support (to handle issues with `for...of` loops)
+      '@babel/plugin-proposal-async-generator-functions',
+      '@babel/plugin-transform-async-to-generator', // Ensures async code is correctly transpiled
+    ].filter(Boolean),
+  };
+};

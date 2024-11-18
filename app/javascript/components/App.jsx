@@ -1,25 +1,44 @@
-// Run this example by adding <%= javascript_pack_tag 'hello_react' %> to the head of your layout file,
-// like app/views/layouts/application.html.erb. All it does is render <div>Hello React</div> at the bottom
-// of the page.
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
+import EventList from './EventList';
+import EventForm from './EventForm';
+import Greeting from './Greeting'
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-// import SignOutButton from '../components/SignOutButton'
-// import Events from './Events'
+const App = () => {
+  const [isCreating, setIsCreating] = useState(false);
 
-const App = () => (
-  <div>
-    <h1>Hello from React!</h1>
-    <h2>Testing </h2>
-  </div>
-);
+  const handleCreateEvent = (newEventData) => {
+    fetch('/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ event: newEventData }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle successful creation
+        window.location.reload(); // Or trigger re-fetch of data
+      });
+  };
 
-// Render the App component once the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <App />,
-    document.body.appendChild(document.createElement('div')),
+  return (
+    <Router>
+      <div>
+        <h1>Event Management</h1>
+        <Greeting />
+
+        <Routes>
+          <Route path="/events" element={<EventList />} />
+          <Route 
+            path="/events/create" 
+            element={<EventForm onSubmit={handleCreateEvent} />} 
+          />
+          {/* Other routes can be added here for editing or deleting events */}
+        </Routes>
+      </div>
+    </Router>
   );
-});
+};
 
-export default App
+export default App;
