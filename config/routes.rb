@@ -6,6 +6,6 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   devise_for :users
-  resources :events
+  resources :events, only: [:index, :create, :show, :update, :destroy]
 
 end

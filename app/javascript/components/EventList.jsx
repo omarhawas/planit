@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import EventItem from './EventItem';
+import React, { useEffect, useState } from "react";
+import EventItem from "./EventItem";
 
 const EventList = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    fetch('/events')
-      .then((response) => response.json())
+    fetch("/events.json", {
+      headers: {
+        Accept: "application/json", // Explicitly ask for JSON
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+        return response.json();
+      })
       .then((data) => {
-        setEvents(data); // Directly setting the fetched events as the array
+        setEvents(data); // Update state with fetched events
       })
       .catch((error) => console.error("Error fetching events:", error));
   }, []);
@@ -16,11 +25,8 @@ const EventList = () => {
   return (
     <div>
       <h2>Event List</h2>
-      {/* Check if events is an array and not empty */}
       {Array.isArray(events) && events.length > 0 ? (
-        events.map((event) => (
-          <EventItem key={event.id} event={event} />
-        ))
+        events.map((event) => <EventItem key={event.id} event={event} />)
       ) : (
         <p>No events available</p>
       )}
