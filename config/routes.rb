@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   # root "articles#index"
   root to: "home#index"
 
+  get '/events/create', to: 'events#create_page'
+
   devise_for :users
   resources :events, only: [:index, :create, :show, :update, :destroy]
 

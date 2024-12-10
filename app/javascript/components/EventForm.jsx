@@ -9,6 +9,7 @@ const EventForm = ({ event, onSubmit }) => {
     location: '',
   });
 
+  // Pre-fill form for editing
   useEffect(() => {
     if (event) {
       setFormData({
@@ -23,7 +24,27 @@ const EventForm = ({ event, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Get the CSRF token from the meta tag
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+
+    // Send the form data to the backend
+    fetch('/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': token, // Add CSRF token to headers
+      },
+      body: JSON.stringify({ event: formData }), // Send form data to the backend
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Event created:', data);
+        window.location.href = '/events'; // Redirect after successful creation
+      })
+      .catch((error) => {
+        console.error('Error creating event:', error);
+      });
   };
 
   return (
@@ -32,10 +53,12 @@ const EventForm = ({ event, onSubmit }) => {
         type="text"
         value={formData.title}
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        placeholder="Title"
       />
       <textarea
         value={formData.description}
         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+        placeholder="Description"
       />
       <input
         type="date"
@@ -51,8 +74,11 @@ const EventForm = ({ event, onSubmit }) => {
         type="text"
         value={formData.location}
         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+        placeholder="Location"
       />
-      <button type="submit">Submit</button>
+      <button type="submit">
+        {event ? 'Update Event' : 'Create Event'}
+      </button>
     </form>
   );
 };

@@ -37,7 +37,7 @@ class EventsController < ApplicationController
       @event.destroy
       render json: { message: 'Event deleted successfully' }, status: :ok
     end
-  
+
     private
   
     def set_event

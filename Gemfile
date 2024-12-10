@@ -31,6 +31,8 @@ gem "jbuilder"
 gem 'webpacker', '~> 5.0'
 
 gem 'devise'
+
+gem 'gon'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
