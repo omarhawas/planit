@@ -26,13 +26,18 @@ class EventsController < ApplicationController
     end
   
     def update
-      if @event.update(event_params)
-        render json: { event: @event }
-      else
-        render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
-      end
+        Rails.logger.info("Event to update: #{@event.inspect}")
+        Rails.logger.info("Params received: #{event_params.inspect}")
+      
+        if @event.update(event_params)
+          Rails.logger.info("Update successful: #{@event.inspect}")
+          render json: { event: @event }
+        else
+          Rails.logger.info("Update failed: #{@event.errors.full_messages}")
+          render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
+        end
     end
-  
+      
     def destroy
       @event.destroy
       render json: { message: 'Event deleted successfully' }, status: :ok
@@ -41,10 +46,12 @@ class EventsController < ApplicationController
     private
   
     def set_event
-      @event = Event.find_by(id: params[:id])
-      render json: { errors: 'Event not found' }, status: :not_found unless @event
+        @event = Event.find_by(id: params[:id])
+        unless @event
+          render json: { error: 'Event not found' }, status: 404
+        end
     end
-  
+      
     def event_params
       params.require(:event).permit(:title, :description, :date, :time, :location)
     end

@@ -1,10 +1,12 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom'; 
 import EventList from './EventList';
 import EventForm from './EventForm';
 import Greeting from './Greeting';
 
 const App = () => {
+  const [event, setEvent] = useState(null); // Store event data when editing
+
   const handleCreateEvent = (newEventData) => {
     fetch('/events', { // Route for creating event
       method: 'POST',
@@ -44,6 +46,26 @@ const App = () => {
       });
   };
 
+  // Fetch event data when editing an existing event
+  const EditEventForm = () => {
+    const { id } = useParams(); // Get the event ID from the URL
+    const [event, setEvent] = useState(null); // Store event data
+
+    useEffect(() => {
+      const fetchEvent = async () => {
+        const response = await fetch(`/events/${id}`);
+        const data = await response.json();
+        setEvent(data);
+      };
+
+      if (id) fetchEvent();
+    }, [id]);
+
+    if (!event) return <p>Loading event...</p>; // Show a loading message if the event is not fetched yet
+
+    return <EventForm event={event} onSubmit={(updatedEventData) => handleEditEvent(updatedEventData, id)} />;
+  };
+
   return (
     <Router>
       <div>
@@ -58,12 +80,7 @@ const App = () => {
           />
           <Route 
             path="/events/:id/edit" 
-            element={<EventForm 
-              onSubmit={(data) => {
-                const id = window.location.pathname.split('/')[2]; // Extract event ID from URL
-                handleEditEvent(data, id);
-              }} 
-            />} 
+            element={<EditEventForm />} // Use the EditEventForm with the event data passed to it
           />
         </Routes>
       </div>

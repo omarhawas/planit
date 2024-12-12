@@ -27,10 +27,14 @@ const EventForm = ({ event, onSubmit }) => {
     
     // Get the CSRF token from the meta tag
     const token = document.querySelector('meta[name="csrf-token"]').content;
-
+  
+    // Check if event is defined and has an ID
+    const method = event && event.id ? 'PATCH' : 'POST'; // Use PATCH if editing, POST if creating
+    const eventUrl = event && event.id ? `/events/${event.id}` : '/events'; // Use the event ID if editing
+  
     // Send the form data to the backend
-    fetch('/events', {
-      method: 'POST',
+    fetch(eventUrl, {
+      method: method,
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': token, // Add CSRF token to headers
@@ -39,13 +43,14 @@ const EventForm = ({ event, onSubmit }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Event created:', data);
-        window.location.href = '/events'; // Redirect after successful creation
+        console.log(event ? 'Event updated:' : 'Event created:', data);
+        window.location.href = '/events'; // Redirect after successful creation or update
       })
       .catch((error) => {
-        console.error('Error creating event:', error);
+        console.error('Error submitting event:', error);
       });
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
